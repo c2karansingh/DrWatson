@@ -1,0 +1,31 @@
+service: dr-watson
+frameworkVersion: "3"
+provider:
+  name: aws
+  runtime: python3.11
+  httpApi:
+    cors: true
+    payload: "2.0"
+    disableDefaultEndpoint: false
+
+layers:
+  AiResearchLayer:
+    path: layers/ai_layers
+
+package: 
+  individually: true
+  excludeDevDependencies: true
+  exclude:
+    - node_modules/**
+    - .gitignore
+    - .git/**
+    - "*.mp3"
+    - layers/**
+
+functions:
+  app:
+    handler: lambdas/hello-world.handler
+    events:
+      - httpApi:
+          path: /
+          method: GET
