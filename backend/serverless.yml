@@ -2,6 +2,8 @@ service: dr-watson
 frameworkVersion: "3"
 provider:
   name: aws
+  region: us-east-1
+  stage: dev
   runtime: python3.11
   httpApi:
     cors: true
@@ -21,11 +23,43 @@ package:
     - .git/**
     - "*.mp3"
     - layers/**
+    - "*.ipynb"
 
 functions:
-  app:
+  hello-world:
+    layers:
+      - {Ref: AiResearchLayerLambdaLayer}
     handler: lambdas/hello-world.handler
+    timeout: 30
     events:
       - httpApi:
           path: /
           method: GET
+
+  GET-patient:
+    layers:
+      - {Ref: AiResearchLayerLambdaLayer}
+    handler: lambdas/GET-patient.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient
+          method: GET
+
+  GET-patient-recording-upload-link:
+    layers:
+      - {Ref: AiResearchLayerLambdaLayer}
+    handler: lambdas/GET-patient-recording-upload-link.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/recording
+          method: GET
+
+resources:
+  Resources:
+    DrWatsonPatientRecordingsS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: dr-watson-patient-recordings
+
