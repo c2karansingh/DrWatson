@@ -1,6 +1,7 @@
 service: dr-watson
 frameworkVersion: "3"
 provider:
+  architecture: arm64
   name: aws
   region: us-east-1
   stage: dev
