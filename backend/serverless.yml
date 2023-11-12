@@ -112,3 +112,40 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: dr-watson-patient-recordings
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - GET
+                - PUT
+                - POST
+              AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+    DrWatsonPatientRecordingsAllowPublicReadPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: DrWatsonPatientRecordingsS3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+              Resource:
+                Fn::Join:
+                  - ""
+                  -
+                    - { "Fn::GetAtt": ["DrWatsonPatientRecordingsS3Bucket", "Arn"] }
+                    - "/*"
+              Principal: "*"

@@ -12,9 +12,11 @@ def handler(event, context):
         Params={
             "Bucket": "dr-watson-patient-recordings",
             "Key": f"{patient_id}.mp3",
+            "ContentType": "audio/mp3",
         },
         ExpiresIn=3600,
     )
+    print(url)
     return {
         "statusCode": 200,
         "body": json.dumps({
