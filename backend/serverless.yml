@@ -14,7 +14,7 @@ layers:
   AiResearchLayer:
     path: layers/ai_layers
 
-package: 
+package:
   individually: true
   excludeDevDependencies: true
   exclude:
@@ -28,7 +28,7 @@ package:
 functions:
   hello-world:
     layers:
-      - {Ref: AiResearchLayerLambdaLayer}
+      - { Ref: AiResearchLayerLambdaLayer }
     handler: lambdas/hello-world.handler
     timeout: 30
     events:
@@ -38,7 +38,7 @@ functions:
 
   GET-patient:
     layers:
-      - {Ref: AiResearchLayerLambdaLayer}
+      - { Ref: AiResearchLayerLambdaLayer }
     handler: lambdas/GET-patient.handler
     timeout: 30
     events:
@@ -48,12 +48,62 @@ functions:
 
   GET-patient-recording-upload-link:
     layers:
-      - {Ref: AiResearchLayerLambdaLayer}
+      - { Ref: AiResearchLayerLambdaLayer }
     handler: lambdas/GET-patient-recording-upload-link.handler
     timeout: 30
     events:
       - httpApi:
           path: /patient/{patientId}/recording
+          method: GET
+
+  GET-patient-inital-questions:
+    layers:
+      - { Ref: AiResearchLayerLambdaLayer }
+    handler: lambdas/GET-patient-inital-questions.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/initial-questions
+          method: GET
+
+  GET-patient-followup-questions:
+    layers:
+      - { Ref: AiResearchLayerLambdaLayer }
+    handler: lambdas/GET-patient-followup-questions.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/followup-questions
+          method: GET
+
+  POST-patient-inital-answer:
+    layers:
+      - { Ref: AiResearchLayerLambdaLayer }
+    handler: lambdas/POST-patient-inital-answer.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/initial-answer
+          method: POST
+
+  POST-patient-followup-answer:
+    layers:
+      - { Ref: AiResearchLayerLambdaLayer }
+    handler: lambdas/POST-patient-followup-answer.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/followup-answer
+          method: POST
+
+  GET-patient-report:
+    layers:
+      - { Ref: AiResearchLayerLambdaLayer }
+    handler: lambdas/GET-patient-report.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /patient/{patientId}/report
           method: GET
 
 resources:
@@ -62,4 +112,3 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: dr-watson-patient-recordings
-
