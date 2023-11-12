@@ -36,3 +36,30 @@
     transform: rotate(360deg);
   }
 }
+
+.container-style {
+  margin-top: 30px;
+}
+
+.container-style h6 {
+  margin-bottom: 20px;
+  text-align: left
+}
+
+.container-style h4 {
+  margin-bottom: 20px;
+  text-align: center
+}
+
+.container-style div {
+  margin: 5px 0;
+}
+
+.container-style .button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container-style button {
+}

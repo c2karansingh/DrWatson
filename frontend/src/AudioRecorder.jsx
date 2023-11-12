@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-const mimeType = "audio/webm";
+const mimeType = "audio/mp3";
 
 const AudioRecorder = () => {
     const [permission, setPermission] = useState(false);
@@ -43,25 +43,65 @@ const AudioRecorder = () => {
         setAudioChunks(localAudioChunks);
     };
 
-    const stopRecording = () => {
+    const stopRecording = async () => {
         setRecordingStatus("inactive");
+
+
         //stops the recording instance
         mediaRecorder.current.stop();
-        mediaRecorder.current.onstop = () => {
+        mediaRecorder.current.onstop = async () => {
             //creates a blob file from the audiochunks data
             const audioBlob = new Blob(audioChunks, { type: mimeType });
             //creates a playable URL from the blob file.
             const audioUrl = URL.createObjectURL(audioBlob);
             setAudio(audioUrl);
             setAudioChunks([]);
+
+            const response = await fetch('https://33u3xqbrwj.execute-api.us-east-1.amazonaws.com/patient', {
+                method: 'GET',
+            });
+    
+            const data = await response.json(); 
+            const pid = data.patient_id;
+            try {
+                // Fetch the pre-signed URL from your server
+                const response = await fetch(`https://33u3xqbrwj.execute-api.us-east-1.amazonaws.com/patient/${pid}/recording`);
+                if (!response.ok) {
+                    throw new Error('Failed to get pre-signed URL');
+                }
+    
+                const { url } = await response.json();
+                console.log(url);
+                // Use the pre-signed URL to upload the audio file
+                const uploadResponse = await fetch(decodeURI(url), {
+                    method: 'PUT', // or 'POST' depending on your server configuration
+                    body: audioBlob,
+                    headers: {
+                        'Content-Type': mimeType,
+                    },
+                });
+    
+                if (uploadResponse.ok) {
+                    // The audio file has been successfully uploaded
+                    console.log('Audio uploaded successfully');
+                } else {
+                    console.error('Failed to upload audio to S3:', uploadResponse.status, uploadResponse.statusText);
+                }
+            } catch (error) {
+                console.error('Error during S3 upload:', error);
+            }
         };
+
+        
+
     };
 
 
     return (
         <div>
-            <h2>Please provide access first</h2>
+            
             <main>
+                <h1>Patient Notes Recorder</h1>
                 <div className="audio-controls">
                     {!permission ? (
                         <button onClick={getMicrophonePermission} type="button">
@@ -90,6 +130,7 @@ const AudioRecorder = () => {
                 ) : null}
 
             </main>
+            <h6>*Please provide microphone access first*</h6>
         </div>
     );
 };
